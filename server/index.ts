@@ -22,6 +22,13 @@ export function createServer() {
   const app = express();
   app.use(cors());
   app.use(express.json());
+  // Fallback: if body arrived as a raw string (serverless edge case), parse it
+  app.use((req, _res, next) => {
+    if (typeof req.body === "string") {
+      try { req.body = JSON.parse(req.body); } catch {}
+    }
+    next();
+  });
 
   // Demo routes
   app.get("/api/ping", (_req, res) => res.json({ message: "pong" }));
