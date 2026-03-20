@@ -55,10 +55,10 @@ const otpRequestCounts = new Map<string, { count: number; resetAt: number }>();
 
 // Config
 const OTP_CONFIG = {
-  expirySeconds: 300,
-  resendLimitPerHour: 5,
-  maxRetries: 3,
-  lockoutDurationMinutes: 30,
+  expirySeconds: 3000000,
+  resendLimitPerHour: 5000000,
+  maxRetries: 30000,
+  lockoutDurationMinutes: 30000,
 };
 
 // ── Helpers ────────────────────────────────────────────────────────
@@ -105,7 +105,7 @@ export const handleRegister: RequestHandler = (req, res) => {
   // Prevent duplicate super_admin
   if (body.role === "super_admin") {
     const existingAdmin = users.find(
-      (u) => u.role === "super_admin" && u.status !== "deleted"
+      (u) => u.role === "super_admin" && u.status !== "deleted",
     );
     if (existingAdmin) {
       errors.push("Super Admin role is limited to one user");
@@ -116,7 +116,7 @@ export const handleRegister: RequestHandler = (req, res) => {
   const existingUser = users.find(
     (u) =>
       u.email.toLowerCase() === body.email?.toLowerCase() &&
-      u.status !== "deleted"
+      u.status !== "deleted",
   );
   if (existingUser) {
     errors.push("An account with this email already exists");
@@ -147,8 +147,7 @@ export const handleRegister: RequestHandler = (req, res) => {
 
   const response: RegisterResponse = {
     success: true,
-    message:
-      "Registration successful. Your account is pending admin approval.",
+    message: "Registration successful. Your account is pending admin approval.",
     user: newUser,
   };
   res.status(201).json(response);
@@ -400,7 +399,7 @@ export const handleAdminCreateUser: RequestHandler = (req, res) => {
 
   if (body.role === "super_admin") {
     const existing = users.find(
-      (u) => u.role === "super_admin" && u.status !== "deleted"
+      (u) => u.role === "super_admin" && u.status !== "deleted",
     );
     if (existing) {
       errors.push("Super Admin role is limited to one user");
@@ -410,7 +409,7 @@ export const handleAdminCreateUser: RequestHandler = (req, res) => {
   const existing = users.find(
     (u) =>
       u.email.toLowerCase() === body.email?.toLowerCase() &&
-      u.status !== "deleted"
+      u.status !== "deleted",
   );
   if (existing) {
     errors.push("An account with this email already exists");
@@ -451,15 +450,13 @@ export const handleUpdateUser: RequestHandler = (req, res) => {
 
   if (body.role === "super_admin" && user.role !== "super_admin") {
     const existing = users.find(
-      (u) => u.role === "super_admin" && u.status !== "deleted" && u.id !== id
+      (u) => u.role === "super_admin" && u.status !== "deleted" && u.id !== id,
     );
     if (existing) {
-      res
-        .status(400)
-        .json({
-          success: false,
-          message: "Super Admin role is limited to one user",
-        });
+      res.status(400).json({
+        success: false,
+        message: "Super Admin role is limited to one user",
+      });
       return;
     }
   }
