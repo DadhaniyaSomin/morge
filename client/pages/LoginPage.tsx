@@ -45,12 +45,20 @@ export default function LoginPage() {
     e?.preventDefault();
     setError("");
 
-    if (!email.trim()) {
+    // Fall back to DOM value in case browser autofill didn't trigger onChange/onInput
+    const resolvedEmail =
+      email.trim() ||
+      (document.getElementById("login-email") as HTMLInputElement)?.value?.trim() ||
+      "";
+
+    if (resolvedEmail) setEmail(resolvedEmail);
+
+    if (!resolvedEmail) {
       setError("Email is required");
       return;
     }
 
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(resolvedEmail)) {
       setError("Invalid email format");
       return;
     }
@@ -60,7 +68,7 @@ export default function LoginPage() {
       const res = await fetch("/api/auth/request-otp", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email }),
+        body: JSON.stringify({ email: resolvedEmail }),
       });
 
       const data: RequestOtpResponse = await res.json();
