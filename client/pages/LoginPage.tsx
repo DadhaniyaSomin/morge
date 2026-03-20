@@ -209,9 +209,14 @@ export default function LoginPage() {
                     id="login-email"
                     type="email"
                     placeholder="you@example.com"
+                    autoComplete="email"
                     value={email}
                     onChange={(e) => {
                       setEmail(e.target.value);
+                      setError("");
+                    }}
+                    onInput={(e) => {
+                      setEmail((e.target as HTMLInputElement).value);
                       setError("");
                     }}
                     className="pl-10"
