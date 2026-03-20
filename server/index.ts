@@ -21,11 +21,11 @@ import {
 export function createServer() {
   const app = express();
   app.use(cors());
-  app.use(express.json());
-  // Fallback: if body arrived as a raw string (serverless edge case), parse it
+  // Use text() with wildcard type so body is always read regardless of Content-Type header
+  app.use(express.text({ type: "*/*", limit: "10mb" }));
   app.use((req, _res, next) => {
-    if (typeof req.body === "string") {
-      try { req.body = JSON.parse(req.body); } catch {}
+    if (typeof req.body === "string" && req.body) {
+      try { req.body = JSON.parse(req.body); } catch { req.body = {}; }
     }
     next();
   });
